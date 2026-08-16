@@ -26,6 +26,24 @@ public class Book : MonoBehaviour, IPointerClickHandler
         controller = GetComponent<BookController>();
     }
 
+    private void Start()
+    {
+        // Đăng ký với GameManager để được tính vào allBooks (dùng cho check bị che)
+        // và đếm tổng số sách cần xếp xong để xác định điều kiện thắng level
+        GameManager.instance?.RegisterBook(this);
+    }
+
+    // Gọi ngay sau khi Instantiate để gán dữ liệu cho sách được spawn động từ LevelData
+    public void Initialize(BookType type, int sortingOrder)
+    {
+        Type = type; //private set nên chỉ gán được từ trong chính class Book
+
+        if(spriteRenderer != null)
+        {
+            spriteRenderer.sortingOrder = sortingOrder;
+        }
+    }
+
     public void UpdateBlockedState()
     {
         controller.UpdateBlockedState();

@@ -13,6 +13,9 @@ public class BookshelfController : MonoBehaviour
     private Queue<BookshelfData> shelfQueue;
     private readonly Bookshelf[] activeShelves = new Bookshelf[2];
 
+    // Thông báo mỗi khi có 1 kệ mới vừa xuất hiện vào slot (kể cả lúc mở màn lẫn khi kệ đã đầy)
+    public event Action<Bookshelf> OnShelfSpawned;
+
     private void Awake()
     {
         shelfQueue = new Queue<BookshelfData>(currentLevel.ShelfQueue);
@@ -39,6 +42,8 @@ public class BookshelfController : MonoBehaviour
         newShelf.Initialize(data.Type, data.SpaceCount);
         newShelf.OnShelfFilled += HandleShelfFilled;
         activeShelves[slotIndex] = newShelf;
+
+        OnShelfSpawned?.Invoke(newShelf);
     }
 
     private void HandleShelfFilled(Bookshelf shelf)

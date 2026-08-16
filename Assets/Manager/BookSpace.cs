@@ -4,6 +4,7 @@ public class BookSpace : MonoBehaviour
 {
     public bool IsOccupied {get; private set;}
     private Book currentBook;
+    public Book CurrentBook => currentBook;
     public Transform SpaceTransform => transform;
     public void AssignBook(Book book)
     {
