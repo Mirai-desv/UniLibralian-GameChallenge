@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
 
     private List<Bookshelf> Bookshelfs = new List<Bookshelf>();
     private List<Book> allBooks = new List<Book>();
+    [SerializeField] private BoxManager boxManager;
+    [SerializeField] private GameStateController gameStateController;
 
     // Nếu chưa có GameManager thì sử dụng GameManager này để ko hủy logic game
     private void Awake()
@@ -66,9 +68,22 @@ public class GameManager : MonoBehaviour
 
     public void HandleBookSelected(Book book)
     {
-        Vector3 targetPos = targetPosition.position;
+        if (gameStateController.CurrentState != GameStateController.GameState.Playing)
+            return;
 
-        book.MoveToPosition(targetPos, () => {OnBookArrived(book);});
+        if (!boxManager.TryGetTargetSpace(book, out BookSpace targetSpace))
+        {
+            Debug.Log("Sai màu hoặc không có bookshelf phù hợp");
+
+            gameStateController.CheckGameState(allBooks, boxManager);
+            return;
+        }
+
+        book.MoveToPosition(targetSpace.SpaceTransform.position, () =>
+        {
+            boxManager.PlaceBook(book, targetSpace);
+            OnBookArrived(book);
+        });
     }
 
     private void OnBookArrived(Book book)
@@ -80,6 +95,9 @@ public class GameManager : MonoBehaviour
         RefreshAllBlockedStates();
 
         // Đoạn của dev 2 nhá
+        // Đây đoạn của dev 2 đây
+        gameStateController.CheckGameState(allBooks, boxManager);
+
     }
     
 }
