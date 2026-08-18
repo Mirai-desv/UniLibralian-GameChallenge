@@ -16,8 +16,7 @@ public class GameManager : MonoBehaviour
 
     private List<Bookshelf> Bookshelfs = new List<Bookshelf>();
     private List<Book> allBooks = new List<Book>();
-    [SerializeField] private BoxManager boxManager;
-    [SerializeField] private GameStateController gameStateController;
+    [SerializeField] private GameplayStateController GameplayStateController;
 
     // Dùng cho điều keienj thắng: thắng khi số sách đã xếp xong == tổng số sách của level
     private int totalBooksToPlace = 0;
@@ -40,6 +39,11 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        if (GameplayStateController != null)
+        {
+            GameplayStateController.ResetGameState();
+        }
+
         // Mỗi khi 1 kệ mới xuất hiện, thử xem có sách nào đang chờ trong HoldingTray khớp Type không
         if(bookshelfController != null)
         {
@@ -105,9 +109,9 @@ public class GameManager : MonoBehaviour
     {
         if (isLevelOver) return;
 
-        // Nếu có GameStateController và trạng thái không ở Playing thì không cho click tiếp
-        if (gameStateController != null &&
-            gameStateController.CurrentState != GameStateController.GameState.Playing)
+        // Nếu có GameplayStateController và trạng thái không ở Playing thì không cho click tiếp
+        if (GameplayStateController != null &&
+            GameplayStateController.CurrentState != GameplayStateController.GameState.Playing)
         {
             return;
         }
@@ -215,8 +219,18 @@ public class GameManager : MonoBehaviour
     {
         if(isLevelOver) return;
         isLevelOver = true;
-        
-        // Chưa có UI, tạm thời log thôi
+
+        if (GameplayStateController != null)
+        {
+            GameplayStateController.SetState(GameplayStateController.GameState.Win);
+        }
+
+        int currentLevelIndex = LevelLoader.Instance != null ? LevelLoader.Instance.GetCurrentLevel() : 0;
+        if (LevelProgressManager.Instance != null)
+        {
+            LevelProgressManager.Instance.CompleteLevel(currentLevelIndex);
+        }
+
         Debug.Log("LEVEL COMPLETE! Đã xếp xong toàn bộ sách.");
     }
 
@@ -225,7 +239,11 @@ public class GameManager : MonoBehaviour
         if(isLevelOver) return;
         isLevelOver = true;
 
-        // Chưa có UI, tạm thời log thôi
+        if (GameplayStateController != null)
+        {
+            GameplayStateController.SetState(GameplayStateController.GameState.Lose);
+        }
+
         Debug.Log("GAME OVER! Hàng chờ đã đầy, không còn chỗ chứa sách chưa có kệ khớp.");
     }
 

@@ -26,7 +26,7 @@ public class LevelLoader : MonoBehaviour
 
         PlayerPrefs.SetInt("CurrentLevel", levelIndex);
 
-        SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene("Level " + (levelIndex + 1));
     }
 
     public int GetCurrentLevel()
