@@ -22,25 +22,27 @@ public class LevelProgressManager : MonoBehaviour
         }
     }
 
+//Check Level unlock chưa
     public bool IsLevelUnlocked(int levelIndex)
     {
         return levelIndex <= progress.highestUnlockedLevel;
     }
 
+// Nhận Level cao nhất đã unlock
     public int HighestUnlockedLevel()
     {
         return progress.highestUnlockedLevel;
     }
 
+// Cập nhật Level cao nhất đã unlock
     public void CompleteLevel(int levelIndex)
     {
-        if (levelIndex >= progress.highestUnlockedLevel)
+        if (levelIndex + 1 > progress.highestUnlockedLevel)
         {
             progress.highestUnlockedLevel = levelIndex + 1;
             SaveSystem.Save(progress);
         }
 
-        ReturnToMainMenu();
     }
 
     public void ReturnToMainMenu()

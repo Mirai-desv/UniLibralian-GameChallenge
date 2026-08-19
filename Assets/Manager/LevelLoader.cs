@@ -20,6 +20,7 @@ public class LevelLoader : MonoBehaviour
         }
     }
 
+// Load Level theo index
     public void LoadLevel(int levelIndex)
     {
         CurrentLevelIndex = levelIndex;
