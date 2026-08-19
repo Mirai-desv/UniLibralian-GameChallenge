@@ -23,6 +23,7 @@ public class LevelButton : MonoBehaviour
     public void SetLevelIndex(int index)
     {
         levelIndex = index;
+        RefreshState();
     }
 
     public void RefreshState()

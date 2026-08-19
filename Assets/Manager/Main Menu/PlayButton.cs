@@ -15,7 +15,7 @@ public class PlayButton : MonoBehaviour, IPointerClickHandler, IPointerExitHandl
         playSeq.OnComplete(() =>
         {
             Debug.Log("Play Button Cliked");
-            SceneManager.LoadScene(3);
+            SceneManager.LoadScene("Menu Level");
         });
     }
     /*
