@@ -1,11 +1,10 @@
 using UnityEngine;
 using System;
 using System.Collections;
-using DG.Tweening;
-
 public class BookController : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 100f;
+
     private Book book;
     void Awake()
     {
