@@ -79,4 +79,14 @@ public class HoldingTray : MonoBehaviour
             OnTrayFull?.Invoke();
         }
     }
+    public int GetIndexOfSpace(BookSpace space)
+    {
+        if (space == null)
+            return -1;
+
+        BookSpace[] spaces = GetComponentsInChildren<BookSpace>();
+
+        return System.Array.IndexOf(spaces, space);
+    }
+
 }
