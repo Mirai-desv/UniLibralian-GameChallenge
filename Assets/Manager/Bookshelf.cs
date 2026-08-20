@@ -67,6 +67,17 @@ public class Bookshelf : MonoBehaviour
         }
         spaces.Clear();
     }
+
+    public void ReleaseBooks()
+    {
+        foreach(var space in spaces)
+        {
+            if(space != null && space.CurrentBook != null)
+            {
+                space.CurrentBook.transform.SetParent(null, worldPositionStays: true);
+            }
+        }
+    }
 }
 /*
 {

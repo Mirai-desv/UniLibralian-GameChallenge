@@ -51,6 +51,9 @@ public class BookshelfController : MonoBehaviour
         int slotIndex = Array.IndexOf(activeShelves, shelf);
         if(slotIndex < 0) return;
         shelf.OnShelfFilled -= HandleShelfFilled;
+
+        shelf.ReleaseBooks();
+
         Destroy(shelf.gameObject);
         activeShelves[slotIndex] = null;
         SpawnNextShelf(slotIndex);

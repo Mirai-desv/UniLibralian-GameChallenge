@@ -1,5 +1,15 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
+
+// Cho phép gán asset (sprite) hiển thị khác nhau theo từng BookType khi sách đã xếp xong vào kệ.
+// Nếu để trống mảng này, placedBookVisualPrefab sẽ dùng sprite mặc định có sẵn trên chính prefab.
+[System.Serializable]
+public class PlacedBookVisualEntry
+{
+    public BookType Type;
+    public Sprite Sprite;
+}
 
 public class GameManager : MonoBehaviour
 {
@@ -13,6 +23,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private LevelData currentLevel; // dùng chung asset với LevelData của BookShelfController
     [SerializeField] private Book bookPrefab;
     [SerializeField] private Transform boardContainer; // để trống cũng được, chỉ để gọi Hierarchy
+
+    [Header("Placed Book Visual (khi sách xếp xong vào kệ)")]
+    // Prefab chỉ cần có 1 SpriteRenderer, dùng để hiển thị asset MỚI thay cho sách gốc
+    // ngay khi sách bay tới đúng ô trên kệ. Sách gốc sẽ bị Destroy() ngay sau đó.
+    [SerializeField] private GameObject placedBookVisualPrefab;
+    // Tùy chọn: nếu muốn mỗi loại sách (BookType) hiện 1 sprite khác nhau khi đã xếp vào kệ
+    [SerializeField] private PlacedBookVisualEntry[] placedBookVisualsByType;
 
     private List<Bookshelf> Bookshelfs = new List<Bookshelf>();
     private List<Book> allBooks = new List<Book>();
@@ -128,9 +145,13 @@ public class GameManager : MonoBehaviour
         Vector3 targetPos = targetSpace.SpaceTransform.position;
         book.MoveToPosition(targetPos, () =>
         {
-            // Gắn sách làm con của BookSpace (giữ đúng vị trí & sortingPoder theo kệ)
-            book.transform.SetParent(targetSpace.SpaceTransform, worldPositionStays: true);
+            // Sách đã bay tới đúng ô -> thay bằng asset MỚI (không cần tương tác nữa),
+            // rồi hủy hẳn sách gốc. Nhờ vậy dù ô/kệ này sau có bị Destroy() (khi kệ đầy)
+            // thì cũng chỉ mất đi visual thay thế chứ không còn phụ thuộc vào sách gốc nữa.
+            SpawnPlacedBookVisual(book.Type, targetSpace.SpaceTransform, book.SpriteRenderer.sortingOrder);
+
             allBooks.Remove(book);
+            Destroy(book.gameObject);
 
             // Báo cho kệ biết vừa có thêm 1 ô được lắp, kệ sẽ tự kiểm tra xem đã đầy chưa
             shelf.NotifySpaceAssigned();
@@ -141,6 +162,32 @@ public class GameManager : MonoBehaviour
 
             RefreshAllBlockedStates();
         });
+    }
+
+    // Spawn asset thay thế hiển thị tại vị trí ô đã lắp sách, dùng sprite riêng theo BookType
+    // nếu có khai báo trong placedBookVisualsByType, ngược lại dùng sprite mặc định của prefab.
+    private void SpawnPlacedBookVisual(BookType type, Transform parent, int sortingOrder)
+    {
+        if (placedBookVisualPrefab == null)
+        {
+            Debug.LogWarning("GameManager chưa gán Placed Book Visual Prefab, sẽ không có gì hiển thị thay cho sách.");
+            return;
+        }
+
+        GameObject visual = Instantiate(placedBookVisualPrefab, parent.position, Quaternion.identity, parent);
+
+        SpriteRenderer sr = visual.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.sortingOrder = sortingOrder;
+
+            Sprite matchedSprite = placedBookVisualsByType?
+                .FirstOrDefault(e => e.Type == type)?.Sprite;
+            if (matchedSprite != null)
+            {
+                sr.sprite = matchedSprite;
+            }
+        }
     }
 
     // Gửi sách vào ô trống đầu tiên của hàng chờ (holding tray) khi chưa có kệ nào khớp Type
