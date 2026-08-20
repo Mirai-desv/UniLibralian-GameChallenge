@@ -4,13 +4,12 @@ using System.Collections.Generic;
 public class BookshelfController : MonoBehaviour
 {
     [Header ("Level Data")]
-    [SerializeField] private LevelData[] levels;
+    [SerializeField] private LevelData currentLevel;
     [Header ("Shelf Setup")]
     [SerializeField] private Bookshelf bookshelfPrefab;
     //[SerializeField] private List<BookshelfData> shelfQueueData;
     [SerializeField] private Transform[] slotPositions = new Transform[2];
     
-    private LevelData currentLevel;
     private Queue<BookshelfData> shelfQueue;
     private readonly Bookshelf[] activeShelves = new Bookshelf[2];
 
@@ -19,9 +18,6 @@ public class BookshelfController : MonoBehaviour
 
     private void Awake()
     {
-        int index = LevelLoader.Instance.GetCurrentLevel();
-        currentLevel = levels[index];
-
         shelfQueue = new Queue<BookshelfData>(currentLevel.ShelfQueue);
     }
 
