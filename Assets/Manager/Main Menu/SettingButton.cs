@@ -14,7 +14,7 @@ public class SettingButton : MonoBehaviour, IPointerClickHandler
         settingSeq.OnComplete(() =>
         {
             Debug.Log("Setting Button Clicked");
-            SceneManager.LoadScene(2);
+            SceneManager.LoadScene("Setting");
         });
     }
 }
