@@ -6,6 +6,81 @@ using System.Linq;
 
 public class Bookshelf : MonoBehaviour
 {
+    [Header("Data")]
+    public BookType Type { get; private set; }
+
+    [Header("Layout Setup")]
+    [SerializeField] private BookSpace bookSpacePrefab; 
+    [SerializeField] private float spaceWidth = 0.3f;    // Độ dày / khoảng cách giữa các cuốn sách
+    [SerializeField] private Vector3 startOffset = Vector3.zero; // Tùy chỉnh điểm đặt sách đầu tiên so với tâm Kệ
+
+    private readonly List<BookSpace> spaces = new List<BookSpace>();
+
+    // Bắn ra sự kiện khi BookSpace cuối cùng vừa được lấp đầy (thông báo win level)
+    public event Action<Bookshelf> OnShelfFilled;
+
+    // Kiểm tra xem tất cả các vị trí BookSpace đã có sách xếp vào chưa
+    public bool IsFull => spaces.Count > 0 && spaces.All(s => s.IsOccupied);
+
+    public void Initialize(BookType type, int count)
+    {
+        Type = type;
+
+        ClearSpaces();
+
+        // Tính toán khoảng cách để căn giữa chuỗi sách trên Asset Kệ
+        float totalWidth = spaceWidth * count;
+        float startX = -totalWidth / 2f + spaceWidth / 2f;
+
+        for (int i = 0; i < count; i++)
+        {
+            BookSpace space = Instantiate(bookSpacePrefab, transform);
+            
+            // Định vị các BookSpace ẩn đóng vai trò làm điểm đặt sách
+            Vector3 localPos = startOffset + new Vector3(startX + (i * spaceWidth), 0f, 0f);
+            space.transform.localPosition = localPos;
+            
+            spaces.Add(space);
+        }
+    }
+
+    // Tìm vị trí trống đầu tiên để thả sách vào
+    public BookSpace GetFirstEmptySpace()
+    {
+        return spaces.FirstOrDefault(s => !s.IsOccupied);
+    }
+
+    // Gọi hàm này mỗi khi có một cuốn sách mới được xếp vào kệ
+    public void NotifySpaceAssigned()
+    {
+        if (IsFull)
+        {
+            OnShelfFilled?.Invoke(this);
+        }
+    }
+
+    private void ClearSpaces()
+    {
+        foreach (var space in spaces)
+        {
+            if (space != null) Destroy(space.gameObject);
+        }
+        spaces.Clear();
+    }
+
+    public void ReleaseBooks()
+    {
+        foreach(var space in spaces)
+        {
+            if(space != null && space.CurrentBook != null)
+            {
+                space.CurrentBook.transform.SetParent(null, worldPositionStays: true);
+            }
+        }
+    }
+}
+/*
+{
     [Header ("Data")]
     public BookType Type {get; private set; }
     [Header ("Layout Setup")]
@@ -67,3 +142,4 @@ public class Bookshelf : MonoBehaviour
         }
     }
 }
+*/

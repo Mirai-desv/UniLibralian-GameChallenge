@@ -35,9 +35,12 @@ public class BookController : MonoBehaviour
             Book otherBook = col.GetComponent<Book>();
             if (otherBook == null) continue;
 
-            if (otherBook.SpriteRenderer.sortingOrder > book.SpriteRenderer.sortingOrder)
+            if (otherBook != null && otherBook.SpriteRenderer != null && book.SpriteRenderer != null)
             {
-                return true;
+                if (otherBook.SpriteRenderer.sortingOrder > book.SpriteRenderer.sortingOrder)
+                {
+                    return true;
+                }
             }
         }
         return false;
@@ -66,13 +69,15 @@ public class BookController : MonoBehaviour
         int originalSortingOrder = book.SpriteRenderer.sortingOrder;
         book.SpriteRenderer.sortingOrder = 1000;
 
+        float targetZ = transform.position.z;
+
         while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
         {
             transform.position = Vector3. MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
             yield return null;
         }
 
-        transform.position = targetPosition;
+        transform.position = new Vector3(targetPosition.x, targetPosition.y, targetZ);
         book.SpriteRenderer.sortingOrder = originalSortingOrder;
 
         book.IsMoving = false;

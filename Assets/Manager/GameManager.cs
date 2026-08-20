@@ -1,5 +1,15 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
+
+// Cho phép gán asset (sprite) hiển thị khác nhau theo từng BookType khi sách đã xếp xong vào kệ.
+// Nếu để trống mảng này, placedBookVisualPrefab sẽ dùng sprite mặc định có sẵn trên chính prefab.
+[System.Serializable]
+public class PlacedBookVisualEntry
+{
+    public BookType Type;
+    public Sprite Sprite;
+}
 
 public class GameManager : MonoBehaviour
 {
@@ -10,109 +20,96 @@ public class GameManager : MonoBehaviour
     [SerializeField] private HoldingTray holdingTray;
 
     [Header("Level Data")]
-    [SerializeField] private LevelData currentLevel;
+    [SerializeField] private LevelData currentLevel; // dùng chung asset với LevelData của BookShelfController
     [SerializeField] private Book bookPrefab;
-    [SerializeField] private Transform boardContainer;
+    [SerializeField] private Transform boardContainer; // để trống cũng được, chỉ để gọi Hierarchy
+
+    [Header("Placed Book Visual (khi sách xếp xong vào kệ)")]
+    // Prefab chỉ cần có 1 SpriteRenderer, dùng để hiển thị asset MỚI thay cho sách gốc
+    // ngay khi sách bay tới đúng ô trên kệ. Sách gốc sẽ bị Destroy() ngay sau đó.
+    [SerializeField] private GameObject placedBookVisualPrefab;
+    // Tùy chọn: nếu muốn mỗi loại sách (BookType) hiện 1 sprite khác nhau khi đã xếp vào kệ
+    [SerializeField] private PlacedBookVisualEntry[] placedBookVisualsByType;
 
     private List<Bookshelf> Bookshelfs = new List<Bookshelf>();
     private List<Book> allBooks = new List<Book>();
-    [SerializeField] private GameplayStateController GameplayStateController;
 
+    // Dùng cho điều keienj thắng: thắng khi số sách đã xếp xong == tổng số sách của level
     private int totalBooksToPlace = 0;
     private int booksPlaced = 0;
     private bool isLevelOver = false;
 
+    // Nếu chưa có GameManager thì sử dụng GameManager này để ko hủy logic game
     private void Awake()
     {
-        if (instance != null && instance != this)
+        if(instance == null)
         {
-            Debug.LogWarning("Phát hiện 2 GameManager cùng tồn tại trong 1 scene, huỷ bản thừa.");
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
             Destroy(gameObject);
-            return;
-        }
-
-        instance = this;
-    }
-
-    private void OnDestroy()
-    {
-        if (instance == this)
-        {
-            instance = null;
-        }
-
-        // Unsubscribe để tránh lỗi/leak khi object bị huỷ giữa chừng
-        if (bookshelfController != null)
-        {
-            bookshelfController.OnShelfSpawned -= HandleShelfSpawned;
-        }
-
-        if (holdingTray != null)
-        {
-            holdingTray.OnTrayFull -= HandleLevelLose;
         }
     }
 
     private void Start()
     {
-        if (GameplayStateController != null)
-        {
-            GameplayStateController.ResetGameState();
-        }
-
-        if (bookshelfController != null)
+        // Mỗi khi 1 kệ mới xuất hiện, thử xem có sách nào đang chờ trong HoldingTray khớp Type không
+        if(bookshelfController != null)
         {
             bookshelfController.OnShelfSpawned += HandleShelfSpawned;
         }
 
-        if (holdingTray != null)
+        // Hàng chờ đầy hoàn toàn thì thua
+        if(holdingTray != null)
         {
             holdingTray.OnTrayFull += HandleLevelLose;
         }
-
         LoadLevel();
     }
 
     void LoadLevel()
     {
         GenerateLevel();
+        // Check trạng thái bị che ngay khi vừa xuất hiện level
         RefreshAllBlockedStates();
     }
 
     void GenerateLevel()
     {
-        if (currentLevel == null)
+        if(currentLevel == null)
         {
             Debug.LogWarning("GameManager chưa được gán LevelData, không có sách nào để sinh ra.");
             return;
         }
 
-        if (bookPrefab == null)
+        if(bookPrefab == null)
         {
             Debug.LogWarning("GameManager chưa được gán Book Prefab, không thể sinh sách.");
             return;
         }
 
-        foreach (BookSpawnData data in currentLevel.BookLayout)
+        foreach(BookSpawnData data in currentLevel.BookLayout)
         {
             Book newBook = Instantiate(bookPrefab, data.Position, Quaternion.identity, boardContainer);
             newBook.Initialize(data.Type, data.SortingOrder);
-            RegisterBook(newBook);
         }
     }
 
+    // Book tự gọi hàm này khi Start() để được GameManager quản lý
     public void RegisterBook(Book book)
     {
-        if (book == null || allBooks.Contains(book)) return;
+        if(book == null || allBooks.Contains(book)) return;
         allBooks.Add(book);
         totalBooksToPlace++;
     }
 
     public void RefreshAllBlockedStates()
     {
-        foreach (var book in allBooks)
+        foreach(var book in allBooks)
         {
-            if (book != null)
+            if(book != null)
             {
                 book.UpdateBlockedState();
             }
@@ -121,43 +118,45 @@ public class GameManager : MonoBehaviour
 
     public void HandleBookSelected(Book book)
     {
-        if (isLevelOver) return;
-
-        if (GameplayStateController != null &&
-            GameplayStateController.CurrentState != GameplayStateController.GameState.Playing)
-        {
-            return;
-        }
-
-        Bookshelf targetShelf = bookshelfController != null ? bookshelfController.FindMatchingShelf(book.Type) : null;
-        if (targetShelf != null)
+        if(isLevelOver) return;
+        // Tìm kệ đang active có cùng Type và còn ô trống
+        Bookshelf targetShelf = bookshelfController.FindMatchingShelf(book.Type);
+        if(targetShelf != null)
         {
             PlaceBookInShelf(book, targetShelf);
             return;
         }
-
         PlaceBookInTray(book);
     }
 
     private void PlaceBookInShelf(Book book, Bookshelf shelf)
     {
         BookSpace targetSpace = shelf.GetFirstEmptySpace();
-        if (targetSpace == null)
+        if(targetSpace == null)
         {
+            // Kệ vừa bị lấp đầy bởi 1 lượt khác ngay trước đó (hiếm, phòng ngừa thôi)
             Debug.LogWarning($"Kệ {shelf.Type} báo còn chỗ nhưng GetFirstEmptySpace() lại null.");
             return;
         }
 
+        // Giữ chỗ ngay lập tức, tránh 2 lượt sách nhắm cùng 1 ô
         targetSpace.AssignBook(book);
 
         Vector3 targetPos = targetSpace.SpaceTransform.position;
         book.MoveToPosition(targetPos, () =>
         {
-            book.transform.SetParent(targetSpace.SpaceTransform, worldPositionStays: true);
-            allBooks.Remove(book);
+            // Sách đã bay tới đúng ô -> thay bằng asset MỚI (không cần tương tác nữa),
+            // rồi hủy hẳn sách gốc. Nhờ vậy dù ô/kệ này sau có bị Destroy() (khi kệ đầy)
+            // thì cũng chỉ mất đi visual thay thế chứ không còn phụ thuộc vào sách gốc nữa.
+            SpawnPlacedBookVisual(book.Type, targetSpace.SpaceTransform, book.SpriteRenderer.sortingOrder);
 
+            allBooks.Remove(book);
+            Destroy(book.gameObject);
+
+            // Báo cho kệ biết vừa có thêm 1 ô được lắp, kệ sẽ tự kiểm tra xem đã đầy chưa
             shelf.NotifySpaceAssigned();
 
+            // Sách đã xếp xong -> tính vào điều kiện thắng level
             booksPlaced++;
             CheckWinCondition();
 
@@ -165,18 +164,46 @@ public class GameManager : MonoBehaviour
         });
     }
 
+    // Spawn asset thay thế hiển thị tại vị trí ô đã lắp sách, dùng sprite riêng theo BookType
+    // nếu có khai báo trong placedBookVisualsByType, ngược lại dùng sprite mặc định của prefab.
+    private void SpawnPlacedBookVisual(BookType type, Transform parent, int sortingOrder)
+    {
+        if (placedBookVisualPrefab == null)
+        {
+            Debug.LogWarning("GameManager chưa gán Placed Book Visual Prefab, sẽ không có gì hiển thị thay cho sách.");
+            return;
+        }
+
+        GameObject visual = Instantiate(placedBookVisualPrefab, parent.position, Quaternion.identity, parent);
+
+        SpriteRenderer sr = visual.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.sortingOrder = sortingOrder;
+
+            Sprite matchedSprite = placedBookVisualsByType?
+                .FirstOrDefault(e => e.Type == type)?.Sprite;
+            if (matchedSprite != null)
+            {
+                sr.sprite = matchedSprite;
+            }
+        }
+    }
+
+    // Gửi sách vào ô trống đầu tiên của hàng chờ (holding tray) khi chưa có kệ nào khớp Type
     private void PlaceBookInTray(Book book)
     {
-        if (isLevelOver) return;
-        if (holdingTray == null)
+        if(isLevelOver) return;
+        if(holdingTray == null)
         {
-            Debug.LogWarning("GameManager chưa được gán HoldingTray, sách tạm thời đứng yên.");
+            Debug.LogWarning("GameManager chưa được gán HoldingTray, sách tạm thời đúng yên.");
             return;
         }
 
         BookSpace traySpace = holdingTray.GetFirstEmptySpace();
-        if (traySpace == null)
+        if(traySpace == null)
         {
+            // Hàng chờ đầy = thua
             HandleLevelLose();
             return;
         }
@@ -187,31 +214,34 @@ public class GameManager : MonoBehaviour
         book.MoveToPosition(targetPos, () =>
         {
             book.transform.SetParent(traySpace.SpaceTransform, worldPositionStays: true);
+            // Sách đã rời board chính (không còn tương tác/ che sách khác nữa) nên bỏ khỏi allBooks, nhưng vẫn tồn tại trong tray, chờ tới khi có kệ khớp Type xuất hiện
             allBooks.Remove(book);
             holdingTray.NotifySpaceAssigned();
             RefreshAllBlockedStates();
         });
     }
 
+    // Gọi mỗi khi BookshelfController spawn 1 kệ mới -> thử rút sách đang chờ trong tray khớp Type
     private void HandleShelfSpawned(Bookshelf shelf)
     {
-        if (isLevelOver) return;
+        if(isLevelOver) return;
         if (holdingTray == null) return;
-
+ 
         BookSpace waitingSpace = holdingTray.FindWaitingBook(shelf.Type);
         if (waitingSpace == null) return;
-
+ 
         Book waitingBook = waitingSpace.CurrentBook;
         waitingSpace.Clear();
-
+ 
         PlaceBookInShelf(waitingBook, shelf);
     }
 
     private void CheckWinCondition()
     {
-        if (isLevelOver) return;
+        if(isLevelOver) return;
 
-        if (totalBooksToPlace > 0 && booksPlaced >= totalBooksToPlace)
+        // totalBooksToPlace > 0 để tránh thắng ảo khi level chưa kịp đăng ký sách nào
+        if(totalBooksToPlace > 0 && booksPlaced >= totalBooksToPlace)
         {
             HandleLevelWin();
         }
@@ -219,33 +249,35 @@ public class GameManager : MonoBehaviour
 
     private void HandleLevelWin()
     {
-        if (isLevelOver) return;
+        if(isLevelOver) return;
         isLevelOver = true;
-
-        if (GameplayStateController != null)
-        {
-            GameplayStateController.SetState(GameplayStateController.GameState.Win);
-        }
-
-        int currentLevelIndex = LevelLoader.Instance != null ? LevelLoader.Instance.GetCurrentLevel() : 0;
-        if (LevelProgressManager.Instance != null)
-        {
-            LevelProgressManager.Instance.CompleteLevel(currentLevelIndex);
-        }
-
+        
+        // Chưa có UI, tạm thời log thôi
         Debug.Log("LEVEL COMPLETE! Đã xếp xong toàn bộ sách.");
     }
 
     private void HandleLevelLose()
     {
-        if (isLevelOver) return;
+        if(isLevelOver) return;
         isLevelOver = true;
 
-        if (GameplayStateController != null)
-        {
-            GameplayStateController.SetState(GameplayStateController.GameState.Lose);
-        }
-
+        // Chưa có UI, tạm thời log thôi
         Debug.Log("GAME OVER! Hàng chờ đã đầy, không còn chỗ chứa sách chưa có kệ khớp.");
+    }
+
+    // Tạm thời để đây, khả năng là sẽ ko cần đến
+    private void OnBookArrived(Book book, Bookshelf shelf, BookSpace space)
+    {
+        // Gắn sách làm con của BookSpace để giữ đúng vị trí & sortingOrder theo kệ
+        book.transform.SetParent(space.SpaceTransform, worldPositionStays: true);
+
+        // Đến nơi rồi nên coi như xóa book khỏi map
+        allBooks.Remove(book);
+
+        // Báo lại trạng thái cho kệ
+        shelf.NotifySpaceAssigned();
+
+        // Cập nhật lại trạng thái bị che
+        RefreshAllBlockedStates();
     }
 }
