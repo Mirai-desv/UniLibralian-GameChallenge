@@ -39,7 +39,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -103.4, y: -82.5}
-  m_SizeDelta: {x: 70, y: 100}
+  m_SizeDelta: {x: 140, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &798620524538051150
 CanvasRenderer:
@@ -69,7 +69,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -7361401026415652087, guid: 02a70c2dd7efe444ab90ff0ce8bd63bf, type: 3}
+  m_Sprite: {fileID: -7361401026415652087, guid: 5a4493e4612600d49b00483add12bda6, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -106,7 +106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Book
   <IsBlocked>k__BackingField: 0
   <IsMoving>k__BackingField: 0
-  <Type>k__BackingField: 0
+  <Type>k__BackingField: 2
   boxCollider: {fileID: 0}
   spriteRenderer: {fileID: 0}
 --- !u!61 &9133425829129928377
@@ -153,7 +153,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 70, y: 100}
+  m_Size: {x: 140, y: 200}
   m_EdgeRadius: 0
 --- !u!212 &6968704895641572779
 SpriteRenderer:

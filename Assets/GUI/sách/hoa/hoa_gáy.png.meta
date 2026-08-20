@@ -103,12 +103,12 @@ TextureImporter:
       name: "hoa_g\xE1y_0"
       rect:
         serializedVersion: 2
-        x: 189
-        y: 991
-        width: 406
-        height: 409
+        x: 336
+        y: 992
+        width: 141
+        height: 350
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: ae0882494e1dbb1489c34ce2311d11e1
     internalID: 0
     vertices: []
     indices: 

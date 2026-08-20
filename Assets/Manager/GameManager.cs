@@ -24,11 +24,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Book bookPrefab;
     [SerializeField] private Transform boardContainer; // để trống cũng được, chỉ để gọi Hierarchy
 
-    [Header("Placed Book Visual (khi sách xếp xong vào kệ)")]
-    // Prefab chỉ cần có 1 SpriteRenderer, dùng để hiển thị asset MỚI thay cho sách gốc
-    // ngay khi sách bay tới đúng ô trên kệ. Sách gốc sẽ bị Destroy() ngay sau đó.
+    [Header("Placed Book Visual")]
     [SerializeField] private GameObject placedBookVisualPrefab;
-    // Tùy chọn: nếu muốn mỗi loại sách (BookType) hiện 1 sprite khác nhau khi đã xếp vào kệ
+    // Nếu muốn mỗi loại sách (BookType) hiện 1 sprite khác nhau khi đã xếp vào kệ
     [SerializeField] private PlacedBookVisualEntry[] placedBookVisualsByType;
 
     private List<Bookshelf> Bookshelfs = new List<Bookshelf>();
@@ -146,8 +144,6 @@ public class GameManager : MonoBehaviour
         book.MoveToPosition(targetPos, () =>
         {
             // Sách đã bay tới đúng ô -> thay bằng asset MỚI (không cần tương tác nữa),
-            // rồi hủy hẳn sách gốc. Nhờ vậy dù ô/kệ này sau có bị Destroy() (khi kệ đầy)
-            // thì cũng chỉ mất đi visual thay thế chứ không còn phụ thuộc vào sách gốc nữa.
             SpawnPlacedBookVisual(book.Type, targetSpace.SpaceTransform, book.SpriteRenderer.sortingOrder);
 
             allBooks.Remove(book);
@@ -213,6 +209,7 @@ public class GameManager : MonoBehaviour
         Vector3 targetPos = traySpace.SpaceTransform.position;
         book.MoveToPosition(targetPos, () =>
         {
+            SpawnPlacedBookVisual(book.Type, traySpace.SpaceTransform, book.SpriteRenderer.sortingOrder);
             book.transform.SetParent(traySpace.SpaceTransform, worldPositionStays: true);
             // Sách đã rời board chính (không còn tương tác/ che sách khác nữa) nên bỏ khỏi allBooks, nhưng vẫn tồn tại trong tray, chờ tới khi có kệ khớp Type xuất hiện
             allBooks.Remove(book);

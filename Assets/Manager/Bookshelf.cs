@@ -11,7 +11,7 @@ public class Bookshelf : MonoBehaviour
 
     [Header("Layout Setup")]
     [SerializeField] private BookSpace bookSpacePrefab; 
-    [SerializeField] private float spaceWidth = 0.3f;    // Độ dày / khoảng cách giữa các cuốn sách
+    [SerializeField] private float spaceWidth = 0.3f;    // Khoảng cách giữa các cuốn sách
     [SerializeField] private Vector3 startOffset = Vector3.zero; // Tùy chỉnh điểm đặt sách đầu tiên so với tâm Kệ
 
     private readonly List<BookSpace> spaces = new List<BookSpace>();

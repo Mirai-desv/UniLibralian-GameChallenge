@@ -45,7 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bookshelf
   bookSpacePrefab: {fileID: 8783765885280968714, guid: 92a5bc1755332e44fa832577276c7693, type: 3}
-  leftCapPrefab: {fileID: 8417730797631147398, guid: 1a6bc559081ca60429d81c1fc68d7d65, type: 3}
-  rightCapPrefab: {fileID: 7691299726756495202, guid: a97c646c16f30834e906101ad4bcc41b, type: 3}
-  spaceWidth: 0.3
-  capWidth: 0.15
+  spaceWidth: 0.8
+  startOffset: {x: 0, y: 0, z: 0}
