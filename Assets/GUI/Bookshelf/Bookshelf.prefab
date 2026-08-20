@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7786921819304645659
+--- !u!1 &4433892823124578289
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,8 +8,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6988350141667465544}
-  - component: {fileID: 8753826434249167227}
+  - component: {fileID: 3558817087805260450}
+  - component: {fileID: 2946261149202664081}
   m_Layer: 0
   m_Name: Bookshelf
   m_TagString: Untagged
@@ -17,28 +17,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6988350141667465544
+--- !u!4 &3558817087805260450
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7786921819304645659}
+  m_GameObject: {fileID: 4433892823124578289}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.86801, y: 5.20996, z: 0}
+  m_LocalPosition: {x: 0, y: 0.03, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8753826434249167227
+--- !u!114 &2946261149202664081
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7786921819304645659}
+  m_GameObject: {fileID: 4433892823124578289}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 96916dbe18468ea44b68f2c964f514f5, type: 3}
@@ -47,3 +47,23 @@ MonoBehaviour:
   bookSpacePrefab: {fileID: 8783765885280968714, guid: 92a5bc1755332e44fa832577276c7693, type: 3}
   spaceWidth: 0.8
   startOffset: {x: 0, y: 0, z: 0}
+  topVisualPrefab: {fileID: 5418308970620220160, guid: 19e6319b9750c374cb08c55d2bcac0ad, type: 3}
+  topVisualsByType:
+  - Type: 0
+    Sprite: {fileID: -7647415300689008521, guid: 4f7a3aa1d2da4244dbd959c3dbef3b33, type: 3}
+  - Type: 0
+    Sprite: {fileID: 0}
+  - Type: 0
+    Sprite: {fileID: 0}
+  - Type: 0
+    Sprite: {fileID: 0}
+  - Type: 0
+    Sprite: {fileID: 0}
+  - Type: 0
+    Sprite: {fileID: 0}
+  - Type: 0
+    Sprite: {fileID: 0}
+  - Type: 0
+    Sprite: {fileID: 0}
+  - Type: 0
+    Sprite: {fileID: 0}
