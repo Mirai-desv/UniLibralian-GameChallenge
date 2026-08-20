@@ -223,13 +223,13 @@ public class GameManager : MonoBehaviour
     {
         if(isLevelOver) return;
         if (holdingTray == null) return;
- 
+
         BookSpace waitingSpace = holdingTray.FindWaitingBook(shelf.Type);
         if (waitingSpace == null) return;
- 
+
         Book waitingBook = waitingSpace.CurrentBook;
         waitingSpace.Clear();
- 
+
         PlaceBookInShelf(waitingBook, shelf);
     }
 
@@ -248,8 +248,7 @@ public class GameManager : MonoBehaviour
     {
         if(isLevelOver) return;
         isLevelOver = true;
-        
-        // Chưa có UI, tạm thời log thôi
+
         Debug.Log("LEVEL COMPLETE! Đã xếp xong toàn bộ sách.");
     }
 
@@ -258,7 +257,12 @@ public class GameManager : MonoBehaviour
         if(isLevelOver) return;
         isLevelOver = true;
 
-        // Chưa có UI, tạm thời log thôi
+        GameplayStateController stateController = FindFirstObjectByType<GameplayStateController>();
+        if (stateController != null)
+        {
+            stateController.SetState(GameplayStateController.GameState.Lose);
+        }
+
         Debug.Log("GAME OVER! Hàng chờ đã đầy, không còn chỗ chứa sách chưa có kệ khớp.");
     }
 

@@ -37,4 +37,11 @@ public class PauseController : MonoBehaviour
         Time.timeScale = 1f;
         SceneManager.LoadScene("Main Menu");
     }
+
+    public void OpenSettings()
+    {
+        Time.timeScale = 1f;
+        SceneNavigator.previousScene = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene("Setting");
+    }
 }

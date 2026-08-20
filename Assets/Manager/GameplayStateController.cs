@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameplayStateController : MonoBehaviour
 {
@@ -84,9 +85,18 @@ public class GameplayStateController : MonoBehaviour
         if (CurrentState != GameState.Lose)
             return;
 
-        int currentLevel = LevelLoader.Instance.GetCurrentLevel();
+        int currentLevel = LevelLoader.Instance != null
+            ? LevelLoader.Instance.GetCurrentLevel()
+            : PlayerPrefs.GetInt("CurrentLevel", 0);
 
-        LevelLoader.Instance.LoadLevel(currentLevel);
+        if (LevelLoader.Instance != null)
+        {
+            LevelLoader.Instance.LoadLevel(currentLevel);
+        }
+        else
+        {
+            SceneManager.LoadScene("Level " + (currentLevel + 1));
+        }
     }
 
     //Quay về Main Menu
@@ -96,6 +106,10 @@ public class GameplayStateController : MonoBehaviour
         if (LevelProgressManager.Instance != null)
         {
             LevelProgressManager.Instance.ReturnToMainMenu();
+        }
+        else
+        {
+            SceneManager.LoadScene("Main Menu");
         }
     }
 }

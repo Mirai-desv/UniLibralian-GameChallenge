@@ -8,6 +8,8 @@ public class SettingButton : MonoBehaviour, IPointerClickHandler
 {
     public void OnPointerClick(PointerEventData eventData)
     {
+        SceneNavigator.previousScene = SceneManager.GetActiveScene().name;
+
         Sequence settingSeq = DOTween.Sequence();
         settingSeq.Append(transform.DOScale(0.8f, 0.15f));
         settingSeq.Append(transform.DOScale(1f, 0.15f));

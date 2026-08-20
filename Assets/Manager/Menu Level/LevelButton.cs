@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class LevelButton : MonoBehaviour
@@ -59,15 +60,20 @@ public class LevelButton : MonoBehaviour
 
     public void OnLevelButtonClicked()
     {
-        if (LevelProgressManager.Instance == null)
-            return;
-
-        if (!LevelProgressManager.Instance.IsLevelUnlocked(levelIndex))
+        if (LevelProgressManager.Instance != null &&
+            !LevelProgressManager.Instance.IsLevelUnlocked(levelIndex))
         {
             Debug.Log("Level chưa được mở khóa.");
             return;
         }
 
-        LevelLoader.Instance.LoadLevel(levelIndex);
+        if (LevelLoader.Instance != null)
+        {
+            LevelLoader.Instance.LoadLevel(levelIndex);
+        }
+        else
+        {
+            SceneManager.LoadScene("Level " + (levelIndex + 1));
+        }
     }
 }
