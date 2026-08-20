@@ -1557,7 +1557,7 @@ PrefabInstance:
     - target: {fileID: 4965997672499462436, guid: cfc12aed7d36b674e84a94d6eacf4f39, type: 3}
       propertyPath: placedBookVisualPrefab
       value: 
-      objectReference: {fileID: 794261465624766689, guid: 3b04bdf819dd16945b8f26117b576859, type: 3}
+      objectReference: {fileID: 8098627213974455708, guid: 3b04bdf819dd16945b8f26117b576859, type: 3}
     - target: {fileID: 4965997672499462436, guid: cfc12aed7d36b674e84a94d6eacf4f39, type: 3}
       propertyPath: placedBookVisualsByType.Array.size
       value: 2
