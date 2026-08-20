@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
     // Nếu muốn mỗi loại sách (BookType) hiện 1 sprite khác nhau khi đã xếp vào kệ
     [SerializeField] private PlacedBookVisualEntry[] placedBookVisualsByType;
     private List<GameObject> waitingBookVisuals = new List<GameObject>();
+    private Dictionary<BookSpace, GameObject> trayVisuals = new Dictionary<BookSpace, GameObject>();
 
     private List<Bookshelf> Bookshelfs = new List<Bookshelf>();
     private List<Book> allBooks = new List<Book>();
@@ -37,6 +38,8 @@ public class GameManager : MonoBehaviour
     private int totalBooksToPlace = 0;
     private int booksPlaced = 0;
     private bool isLevelOver = false;
+    private List<GameObject> holdingTrayVisuals = new List<GameObject>();
+    public List<BookSpace> Spaces = new List<BookSpace>();
 
     // Nếu chưa có GameManager thì sử dụng GameManager này để ko hủy logic game
     private void Awake()
@@ -161,41 +164,86 @@ public class GameManager : MonoBehaviour
         });
     }
 
-    // Spawn asset thay thế hiển thị tại vị trí ô đã lắp sách, dùng sprite riêng theo BookType
-    // nếu có khai báo trong placedBookVisualsByType, ngược lại dùng sprite mặc định của prefab.
-    private void SpawnPlacedBookVisual(BookType type, Transform parent, int sortingOrder)
+    /*
+    private void SpawnTrayBookVisual(BookType type, Transform parent, int sortingOrder)
+    {
+        if (placedBookVisualPrefab == null) return;
+        GameObject visual = Instantiate(placedBookVisualPrefab, parent.position, Quaternion.identity, parent);
+        holdingTrayVisuals.Add(visual);
+
+        SpriteRenderer sr = visual.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.sortingOrder = sortingOrder;
+            Sprite matchedSprite = placedBookVisualsByType?.FirstOrDefault(e => e.Type == type)?.Sprite;
+            if (matchedSprite != null) sr.sprite = matchedSprite;
+        }
+    }
+    */
+    private void ClearTrayVisuals(BookSpace space)
+    {
+        int index = holdingTray.GetIndexOfSpace(space);
+        if (index >= 0 && index < holdingTrayVisuals.Count)
+        {
+            Destroy(holdingTrayVisuals[index]);
+            holdingTrayVisuals.RemoveAt(index);
+        }
+    }
+
+    private void SpawnPlacedBookVisual(
+    BookType type,
+    Transform parent,
+    int sortingOrder,
+        BookSpace space = null)
     {
         if (placedBookVisualPrefab == null)
         {
-            Debug.LogWarning("GameManager chưa gán Placed Book Visual Prefab, sẽ không có gì hiển thị thay cho sách.");
+            Debug.LogWarning("Chưa gán Placed Book Visual Prefab!");
             return;
         }
 
-        GameObject visual = Instantiate(placedBookVisualPrefab, parent.position, Quaternion.identity, parent);
-        waitingBookVisuals.Add(visual);
+        GameObject visual = Instantiate(
+            placedBookVisualPrefab,
+            parent.position,
+            Quaternion.identity,
+            parent
+        );
 
         SpriteRenderer sr = visual.GetComponent<SpriteRenderer>();
+
         if (sr != null)
         {
             sr.sortingOrder = sortingOrder;
 
             Sprite matchedSprite = placedBookVisualsByType?
                 .FirstOrDefault(e => e.Type == type)?.Sprite;
+
             if (matchedSprite != null)
             {
                 sr.sprite = matchedSprite;
             }
         }
+
+        // Nếu visual thuộc HoldingTray thì lưu lại để sau này xóa được
+        if (space != null)
+        {
+            trayVisuals[space] = visual;
+        }
     }
 
-    private void RemovePlacedBookVisual(Transform parent)
+    private void RemovePlacedBookVisual(BookSpace space)
     {
-        GameObject visual = waitingBookVisuals.FirstOrDefault(item =>
-            item != null && item.transform.parent == parent);
-        if (visual != null)
+        if (space == null)
+            return;
+
+        if (trayVisuals.TryGetValue(space, out GameObject visual))
         {
-            Destroy(visual);
-            waitingBookVisuals.Remove(visual);
+            if (visual != null)
+            {
+                Destroy(visual);
+            }
+
+            trayVisuals.Remove(space);
         }
     }
 
@@ -222,7 +270,7 @@ public class GameManager : MonoBehaviour
         Vector3 targetPos = traySpace.SpaceTransform.position;
         book.MoveToPosition(targetPos, () =>
         {
-            SpawnPlacedBookVisual(book.Type, traySpace.SpaceTransform, book.SpriteRenderer.sortingOrder);
+            SpawnPlacedBookVisual(book.Type, traySpace.SpaceTransform, book.SpriteRenderer.sortingOrder, traySpace);
             book.transform.SetParent(traySpace.SpaceTransform, worldPositionStays: true);
             // Sách đã rời board chính (không còn tương tác/ che sách khác nữa) nên bỏ khỏi allBooks, nhưng vẫn tồn tại trong tray, chờ tới khi có kệ khớp Type xuất hiện
             allBooks.Remove(book);
@@ -237,14 +285,20 @@ public class GameManager : MonoBehaviour
         if(isLevelOver) return;
         if (holdingTray == null) return;
 
-        BookSpace waitingSpace = holdingTray.FindWaitingBook(shelf.Type);
-        if (waitingSpace == null) return;
-
-        Book waitingBook = waitingSpace.CurrentBook;
-        waitingSpace.Clear();
-        RemovePlacedBookVisual(waitingSpace.SpaceTransform);
-
-        PlaceBookInShelf(waitingBook, shelf);
+        while(true)
+        {
+            BookSpace waitingSpace = holdingTray.FindWaitingBook(shelf.Type);
+            if (waitingSpace == null)
+                break;
+            Book waitingBook = waitingSpace.CurrentBook;
+            RemovePlacedBookVisual(waitingSpace);
+            waitingSpace.Clear();
+            if (waitingBook == null)
+            {
+                continue;
+            }
+            PlaceBookInShelf(waitingBook, shelf);
+        }
     }
 
     private void CheckWinCondition()
