@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject placedBookVisualPrefab;
     // Nếu muốn mỗi loại sách (BookType) hiện 1 sprite khác nhau khi đã xếp vào kệ
     [SerializeField] private PlacedBookVisualEntry[] placedBookVisualsByType;
+    private List<GameObject> waitingBookVisuals = new List<GameObject>();
 
     private List<Bookshelf> Bookshelfs = new List<Bookshelf>();
     private List<Book> allBooks = new List<Book>();
@@ -171,6 +172,7 @@ public class GameManager : MonoBehaviour
         }
 
         GameObject visual = Instantiate(placedBookVisualPrefab, parent.position, Quaternion.identity, parent);
+        waitingBookVisuals.Add(visual);
 
         SpriteRenderer sr = visual.GetComponent<SpriteRenderer>();
         if (sr != null)
@@ -183,6 +185,15 @@ public class GameManager : MonoBehaviour
             {
                 sr.sprite = matchedSprite;
             }
+        }
+    }
+
+    private void RemovePlacesBookVisual(GameObject visual)
+    {
+        if(visual != null)
+        {
+            Destroy(visual);
+            waitingBookVisuals.Remove(visual);
         }
     }
 
@@ -229,7 +240,8 @@ public class GameManager : MonoBehaviour
  
         Book waitingBook = waitingSpace.CurrentBook;
         waitingSpace.Clear();
- 
+        RemovePlacesBookVisual(someVisualReference);
+
         PlaceBookInShelf(waitingBook, shelf);
     }
 

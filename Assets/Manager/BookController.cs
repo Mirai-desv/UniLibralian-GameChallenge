@@ -16,8 +16,7 @@ public class BookController : MonoBehaviour
     public void UpdateBlockedState()
     {
         bool blocked = CheckIfBlocked();
-        book.SetBlockedState(blocked);
-        // Sẽ thêm animation sáng tối để ng chơi biết cái nào đang bị đè
+        book.SetBlockedState(blocked); // Book.SetBlockedState tự bật/tắt overlay tối màu đè lên sprite
     }
 
     // Check xem có quyển sách nào đang đè không
@@ -73,7 +72,7 @@ public class BookController : MonoBehaviour
 
         while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
         {
-            transform.position = Vector3. MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
             yield return null;
         }
 
