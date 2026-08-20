@@ -39,7 +39,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -103.4, y: -82.5}
-  m_SizeDelta: {x: 70, y: 100}
+  m_SizeDelta: {x: 140, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8696907334545832971
 CanvasRenderer:
@@ -69,7 +69,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 2460194984852507976, guid: 4f42f81ac7bf7114eb3ddacb46933e23, type: 3}
+  m_Sprite: {fileID: 2460194984852507976, guid: 0929d5867c444d245b55c2359f99c869, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -109,6 +109,8 @@ MonoBehaviour:
   <Type>k__BackingField: 0
   boxCollider: {fileID: 0}
   spriteRenderer: {fileID: 0}
+  blockedOverlaySprite: {fileID: 0}
+  blockedOverlayAlpha: 0.55
 --- !u!61 &7698136055290764254
 BoxCollider2D:
   m_ObjectHideFlags: 0

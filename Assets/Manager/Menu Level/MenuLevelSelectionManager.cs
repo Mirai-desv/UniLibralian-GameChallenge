@@ -23,22 +23,29 @@ public class MenuLevelSelectionManager : MonoBehaviour
             return;
         }
 
-        if (levelButtonPrefab == null)
+        bool usingSceneButtonTemplate = levelButtonPrefab == null;
+        if (usingSceneButtonTemplate)
         {
-            Debug.LogError("MenuLevelSelectionManager: Chưa gán Level Button Prefab.");
-            return;
+            LevelButton sceneButtonTemplate =
+                contentContainer.GetComponentInChildren<LevelButton>(true);
+            if (sceneButtonTemplate == null)
+            {
+                Debug.LogError("MenuLevelSelectionManager: Chưa gán Level Button Prefab.");
+                return;
+            }
+
+            levelButtonPrefab = sceneButtonTemplate.gameObject;
         }
 
-        if (LevelProgressManager.Instance == null)
+        if (usingSceneButtonTemplate)
         {
-            Debug.LogError("Không tìm thấy LevelProgressManager.");
-            return;
+            ConfigureLevelButton(levelButtonPrefab, 0);
+            ClearOldButtons(levelButtonPrefab.transform);
         }
-
-        ClearOldButtons();
-
-        int highestUnlockedLevel =
-            LevelProgressManager.Instance.HighestUnlockedLevel();
+        else
+        {
+            ClearOldButtons();
+        }
 
         int totalGameLevels = CountLevelScenes();
         if (totalGameLevels == 0)
@@ -47,11 +54,10 @@ public class MenuLevelSelectionManager : MonoBehaviour
             return;
         }
 
-        int lastLevelIndex = Mathf.Min(
-            totalGameLevels - 1,
-            highestUnlockedLevel + 10);
-
-        for (int levelIndex = 0; levelIndex <= lastLevelIndex; levelIndex++)
+        int firstGeneratedLevel = usingSceneButtonTemplate ? 1 : 0;
+        for (int levelIndex = firstGeneratedLevel;
+             levelIndex < totalGameLevels;
+             levelIndex++)
         {
             CreateLevelButton(levelIndex);
         }
@@ -97,7 +103,11 @@ public class MenuLevelSelectionManager : MonoBehaviour
         GameObject buttonObject =
             Instantiate(levelButtonPrefab, contentContainer);
 
-        // Hiển thị số Level
+        ConfigureLevelButton(buttonObject, levelIndex);
+    }
+
+    private void ConfigureLevelButton(GameObject buttonObject, int levelIndex)
+    {
         TMP_Text levelText =
             buttonObject.GetComponentInChildren<TMP_Text>();
 
@@ -106,7 +116,6 @@ public class MenuLevelSelectionManager : MonoBehaviour
             levelText.text = (levelIndex + 1).ToString();
         }
 
-        // Cấu hình LevelButton
         LevelButton levelButton =
             buttonObject.GetComponent<LevelButton>();
 
@@ -127,6 +136,17 @@ public class MenuLevelSelectionManager : MonoBehaviour
         foreach (Transform child in contentContainer)
         {
             Destroy(child.gameObject);
+        }
+    }
+
+    private void ClearOldButtons(Transform template)
+    {
+        foreach (Transform child in contentContainer)
+        {
+            if (child != template)
+            {
+                Destroy(child.gameObject);
+            }
         }
     }
 
