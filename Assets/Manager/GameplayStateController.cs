@@ -62,10 +62,15 @@ public class GameplayStateController : MonoBehaviour
         if (CurrentState != GameState.Win)
             return;
 
+        if (LevelLoader.Instance == null)
+        {
+            Debug.LogWarning("LevelLoader.Instance null — có thể đang test trực tiếp scene này, chưa qua Main Menu.");
+            return;
+        }
+
         int currentLevel = LevelLoader.Instance.GetCurrentLevel();
         int nextLevel = currentLevel + 1;
 
-        // Kiểm tra xem còn level tiếp theo không
         if (LevelProgressManager.Instance != null &&
             LevelProgressManager.Instance.IsLevelUnlocked(nextLevel))
         {
@@ -73,7 +78,6 @@ public class GameplayStateController : MonoBehaviour
         }
         else
         {
-            // Nếu đã hết level thì về Main Menu
             OnMainMenuButton();
         }
     }

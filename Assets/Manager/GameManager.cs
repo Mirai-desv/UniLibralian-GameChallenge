@@ -44,10 +44,9 @@ public class GameManager : MonoBehaviour
     // Nếu chưa có GameManager thì sử dụng GameManager này để ko hủy logic game
     private void Awake()
     {
-        if(instance == null)
+        if(instance == null || instance == this)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -80,6 +79,13 @@ public class GameManager : MonoBehaviour
 
     void GenerateLevel()
     {
+        int existingBookCount =
+            FindObjectsByType<Book>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
+        if (existingBookCount > 0)
+        {
+            return;
+        }
+
         if(currentLevel == null)
         {
             Debug.LogWarning("GameManager chưa được gán LevelData, không có sách nào để sinh ra.");
@@ -305,8 +311,13 @@ public class GameManager : MonoBehaviour
     {
         if(isLevelOver) return;
 
-        // totalBooksToPlace > 0 để tránh thắng ảo khi level chưa kịp đăng ký sách nào
-        if(totalBooksToPlace > 0 && booksPlaced >= totalBooksToPlace)
+        allBooks.RemoveAll(book => book == null);
+
+
+
+        bool hasUnplacedBooks = allBooks.Any(book => book != null) ||
+            (holdingTray != null && holdingTray.HasBooks);
+        if (totalBooksToPlace > 0 && !hasUnplacedBooks)
         {
             HandleLevelWin();
         }
@@ -316,6 +327,25 @@ public class GameManager : MonoBehaviour
     {
         if(isLevelOver) return;
         isLevelOver = true;
+
+        GameplayStateController stateController =
+            FindFirstObjectByType<GameplayStateController>(FindObjectsInactive.Include);
+        if (stateController != null)
+        {
+            stateController.SetState(GameplayStateController.GameState.Win);
+        }
+        else
+        {
+            Debug.LogError("Không tìm thấy GameplayStateController để bật WinPanel.");
+        }
+
+        if (LevelProgressManager.Instance != null)
+        {
+            int currentLevel = LevelLoader.Instance != null
+                ? LevelLoader.Instance.GetCurrentLevel()
+                : PlayerPrefs.GetInt("CurrentLevel", 0);
+            LevelProgressManager.Instance.CompleteLevel(currentLevel);
+        }
 
         Debug.Log("LEVEL COMPLETE! Đã xếp xong toàn bộ sách.");
     }

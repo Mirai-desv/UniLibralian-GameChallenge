@@ -21,6 +21,7 @@ public class HoldingTray : MonoBehaviour
     public event Action OnTrayFull;
 
     public bool IsFull => spaces.Count > 0 && spaces.All(s => s.IsOccupied);
+    public bool HasBooks => spaces.Any(s => s.IsOccupied);
 
     private void Awake()
     {
