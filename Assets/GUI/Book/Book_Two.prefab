@@ -91,7 +91,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb43d4375ef9ca469139725c7829d5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BookController
-  moveSpeed: 100
+  moveSpeed: 50
 --- !u!114 &2387721258174310525
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,6 +109,8 @@ MonoBehaviour:
   <Type>k__BackingField: 1
   boxCollider: {fileID: 0}
   spriteRenderer: {fileID: 0}
+  blockedOverlaySprite: {fileID: 0}
+  blockedOverlayAlpha: 0.55
 --- !u!61 &8847144049721309707
 BoxCollider2D:
   m_ObjectHideFlags: 0

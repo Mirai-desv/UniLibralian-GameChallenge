@@ -8,6 +8,6 @@ public enum BookType
     Six,
     Seven,
     Eight,
-    Night,
+    Nine,
     Ten
 }

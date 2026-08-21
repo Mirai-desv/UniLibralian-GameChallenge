@@ -103,12 +103,12 @@ TextureImporter:
       name: "planet_m\u1EB7t tr\u01B0\u1EDBc_0"
       rect:
         serializedVersion: 2
-        x: 346
+        x: 364
         y: 778
-        width: 266
-        height: 365
+        width: 233
+        height: 366
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 08e0f099499cb5c47b023f5218c9c02f
     internalID: 0
     vertices: []
     indices: 

@@ -91,7 +91,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb43d4375ef9ca469139725c7829d5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BookController
-  moveSpeed: 100
+  moveSpeed: 50
 --- !u!114 &1070828851714830136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -155,7 +155,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 70, y: 100}
+  m_Size: {x: 140, y: 200}
   m_EdgeRadius: 0
 --- !u!212 &4710685229713529406
 SpriteRenderer:

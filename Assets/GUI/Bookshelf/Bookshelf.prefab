@@ -61,4 +61,28 @@ MonoBehaviour:
     Sprite: {fileID: -1866861899739511450, guid: 36b79c75e9cd89140834e6ecb41e7787, type: 3}
     Offset: {x: 0, y: 0}
     Scale: {x: 1, y: 1, z: 1}
+  - Type: 3
+    Sprite: {fileID: 1075993247170539406, guid: 30a9402d18728e14e94554d7886ea81b, type: 3}
+    Offset: {x: 0, y: 0}
+    Scale: {x: 1, y: 1, z: 1}
+  - Type: 4
+    Sprite: {fileID: 8986590668820825421, guid: 5bb559e1e76de44459bde8ae2b31d5f4, type: 3}
+    Offset: {x: 0, y: 0}
+    Scale: {x: 1, y: 1, z: 1}
+  - Type: 5
+    Sprite: {fileID: -5223345282623002806, guid: fdef09953529bf34e8e197f25f6b8506, type: 3}
+    Offset: {x: 0, y: 0}
+    Scale: {x: 1, y: 1, z: 1}
+  - Type: 6
+    Sprite: {fileID: 8591533231565066105, guid: 5a518d65a6f67f94981b098124b237c3, type: 3}
+    Offset: {x: 0, y: 0}
+    Scale: {x: 1, y: 1, z: 1}
+  - Type: 7
+    Sprite: {fileID: -8504499713002337088, guid: 80c1502e9b746d148b8e5d9f551a0577, type: 3}
+    Offset: {x: 0, y: 0}
+    Scale: {x: 1, y: 1, z: 1}
+  - Type: 8
+    Sprite: {fileID: 605162050437240712, guid: 76ab82283e3eef940a90645c44e0bd97, type: 3}
+    Offset: {x: 0, y: 0}
+    Scale: {x: 1, y: 1, z: 1}
   topVisualOffsetY: 1

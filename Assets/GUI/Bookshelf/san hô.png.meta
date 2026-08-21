@@ -103,12 +103,12 @@ TextureImporter:
       name: "san h\xF4_0"
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 333
-        height: 232
+        x: 3
+        y: 191
+        width: 330
+        height: 41
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 4a4b52286567db74280478c089c4934a
     internalID: 0
     vertices: []
     indices: 
