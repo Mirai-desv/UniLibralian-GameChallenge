@@ -62,26 +62,42 @@ public class GameplayStateController : MonoBehaviour
         if (CurrentState != GameState.Win)
             return;
 
-        if (LevelLoader.Instance == null)
+        if (LevelLoader.Instance != null)
         {
-            Debug.LogWarning("LevelLoader.Instance null — có thể đang test trực tiếp scene này, chưa qua Main Menu.");
-            return;
-        }
+            int currentLevel = LevelLoader.Instance.GetCurrentLevel();
+            int nextLevel = currentLevel + 1;
 
-        int currentLevel = LevelLoader.Instance.GetCurrentLevel();
-        int nextLevel = currentLevel + 1;
-
-        if (LevelProgressManager.Instance != null &&
-            LevelProgressManager.Instance.IsLevelUnlocked(nextLevel))
-        {
-            LevelLoader.Instance.LoadLevel(nextLevel);
+            if (LevelProgressManager.Instance != null &&
+                LevelProgressManager.Instance.IsLevelUnlocked(nextLevel))
+            {
+                LevelLoader.Instance.LoadLevel(nextLevel);
+            }
+            else
+            {
+                OnMainMenuButton();
+            }
         }
         else
         {
-            OnMainMenuButton();
+            // Fallback khi test trực tiếp scene, chưa qua Bootstrap/Main Menu
+            Debug.LogWarning("LevelLoader.Instance null — fallback dùng SceneManager để test trực tiếp.");
+
+            int currentLevel = PlayerPrefs.GetInt("CurrentLevel", 0);
+            int nextLevel = currentLevel + 1;
+            string nextSceneName = "Level " + (nextLevel + 1);
+
+            if (Application.CanStreamedLevelBeLoaded(nextSceneName))
+            {
+                PlayerPrefs.SetInt("CurrentLevel", nextLevel);
+                SceneManager.LoadScene(nextSceneName);
+            }
+            else
+            {
+                Debug.LogWarning($"Không tìm thấy scene '{nextSceneName}' trong Build Settings.");
+            }
         }
     }
-
+    
     // Chơi lại Level hiện tại
 
     public void OnRetryButton()

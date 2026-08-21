@@ -11,10 +11,9 @@ public class LevelButton : MonoBehaviour
     [SerializeField] private Image background;
     [SerializeField] private Button button;
 
-    [Header("Colors")]
-    [SerializeField] private Color notCompletedColor = Color.white;
-    [SerializeField] private Color lockedColor = Color.gray;
-    [SerializeField] private Color completedColor = Color.green;
+    [Header("Sprites")]
+    [SerializeField] private Sprite lockedSprite;
+    [SerializeField] private Sprite unlockedSprite;
 
     private void Start()
     {
@@ -27,6 +26,12 @@ public class LevelButton : MonoBehaviour
         RefreshState();
     }
 
+    public void SetSprites(Sprite locked, Sprite unlocked)
+    {
+        lockedSprite = locked;
+        unlockedSprite = unlocked;
+    }
+
     public void RefreshState()
     {
         if (LevelProgressManager.Instance == null)
@@ -35,26 +40,16 @@ public class LevelButton : MonoBehaviour
             return;
         }
 
-        int highestUnlocked = 
-            LevelProgressManager.Instance.HighestUnlockedLevel();
+        bool isUnlocked = LevelProgressManager.Instance.IsLevelUnlocked(levelIndex);
 
-        // Đã hoàn thành
-        if (levelIndex < highestUnlocked)
+        if (background != null)
         {
-            background.color = completedColor;
-            button.interactable = true;
+            background.sprite = isUnlocked ? unlockedSprite : lockedSprite;
         }
-        // Đã mở nhưng chưa hoàn thành
-        else if (levelIndex == highestUnlocked)
+
+        if (button != null)
         {
-            background.color = notCompletedColor;
-            button.interactable = true;
-        }
-        // Chưa mở khóa
-        else
-        {
-            background.color = lockedColor;
-            button.interactable = false;
+            button.interactable = isUnlocked;
         }
     }
 

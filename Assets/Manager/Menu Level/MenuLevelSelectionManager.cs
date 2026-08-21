@@ -10,6 +10,10 @@ public class MenuLevelSelectionManager : MonoBehaviour
     [SerializeField] private Transform contentContainer;
     [SerializeField] private GameObject levelButtonPrefab;
 
+    [Header("Sprites theo từng Level (kéo theo đúng thứ tự 1, 2, 3...)")]
+    [SerializeField] private Sprite[] lockedSprites;
+    [SerializeField] private Sprite[] unlockedSprites;
+
     private void Start()
     {
         GenerateLevels();
@@ -108,12 +112,11 @@ public class MenuLevelSelectionManager : MonoBehaviour
 
     private void ConfigureLevelButton(GameObject buttonObject, int levelIndex)
     {
-        TMP_Text levelText =
-            buttonObject.GetComponentInChildren<TMP_Text>();
-
+        // Ẩn hẳn text số cũ (nếu prefab còn sót lại), tránh đè lên sprite
+        TMP_Text levelText = buttonObject.GetComponentInChildren<TMP_Text>(true);
         if (levelText != null)
         {
-            levelText.text = (levelIndex + 1).ToString();
+            levelText.gameObject.SetActive(false);
         }
 
         LevelButton levelButton =
@@ -121,6 +124,15 @@ public class MenuLevelSelectionManager : MonoBehaviour
 
         if (levelButton != null)
         {
+            Sprite locked = (levelIndex < lockedSprites.Length) ? lockedSprites[levelIndex] : null;
+            Sprite unlocked = (levelIndex < unlockedSprites.Length) ? unlockedSprites[levelIndex] : null;
+
+            if (unlocked == null)
+            {
+                Debug.LogWarning($"Thiếu sprite Unlock cho Level {levelIndex + 1}.");
+            }
+
+            levelButton.SetSprites(locked, unlocked);
             levelButton.SetLevelIndex(levelIndex);
         }
         else
