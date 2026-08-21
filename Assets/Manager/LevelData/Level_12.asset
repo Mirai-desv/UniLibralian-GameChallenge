@@ -25,4 +25,8 @@ MonoBehaviour:
     SpaceCount: 5
   - Type: 3
     SpaceCount: 5
+  - Type: 6
+    SpaceCount: 5
+  - Type: 0
+    SpaceCount: 5
   BookLayout: []
