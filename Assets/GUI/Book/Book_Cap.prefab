@@ -11,8 +11,6 @@ GameObject:
   - component: {fileID: 2715122018318027726}
   - component: {fileID: 5715335076999147563}
   - component: {fileID: 8777047362972404894}
-  - component: {fileID: 3364230168022946838}
-  - component: {fileID: 6979631331883829774}
   - component: {fileID: 6281647041819333604}
   - component: {fileID: 8165736181093367508}
   m_Layer: 5
@@ -79,38 +77,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &3364230168022946838
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8098627213974455708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: edb43d4375ef9ca469139725c7829d5e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BookController
-  moveSpeed: 100
---- !u!114 &6979631331883829774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8098627213974455708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c070e26a1fc2a524f88456aaf82f9726, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Book
-  <IsBlocked>k__BackingField: 0
-  <IsMoving>k__BackingField: 0
-  <Type>k__BackingField: 1
-  boxCollider: {fileID: 0}
-  spriteRenderer: {fileID: 0}
-  blockedOverlaySprite: {fileID: 0}
-  blockedOverlayAlpha: 0.55
 --- !u!61 &6281647041819333604
 BoxCollider2D:
   m_ObjectHideFlags: 0
