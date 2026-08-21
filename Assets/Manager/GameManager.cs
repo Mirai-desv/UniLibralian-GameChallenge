@@ -30,7 +30,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PlacedBookVisualEntry[] placedBookVisualsByType;
     private List<GameObject> waitingBookVisuals = new List<GameObject>();
     private Dictionary<BookSpace, GameObject> trayVisuals = new Dictionary<BookSpace, GameObject>();
-
     private List<Bookshelf> Bookshelfs = new List<Bookshelf>();
     private List<Book> allBooks = new List<Book>();
 
@@ -190,11 +189,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void SpawnPlacedBookVisual(
-    BookType type,
-    Transform parent,
-    int sortingOrder,
-        BookSpace space = null)
+    private void SpawnPlacedBookVisual(BookType type, Transform parent, int sortingOrder, BookSpace space = null)
     {
         if (placedBookVisualPrefab == null)
         {
@@ -202,12 +197,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        GameObject visual = Instantiate(
-            placedBookVisualPrefab,
-            parent.position,
-            Quaternion.identity,
-            parent
-        );
+        GameObject visual = Instantiate(placedBookVisualPrefab, parent.position, Quaternion.identity, parent);
 
         SpriteRenderer sr = visual.GetComponent<SpriteRenderer>();
 
@@ -215,8 +205,7 @@ public class GameManager : MonoBehaviour
         {
             sr.sortingOrder = sortingOrder;
 
-            Sprite matchedSprite = placedBookVisualsByType?
-                .FirstOrDefault(e => e.Type == type)?.Sprite;
+            Sprite matchedSprite = placedBookVisualsByType?.FirstOrDefault(e => e.Type == type)?.Sprite;
 
             if (matchedSprite != null)
             {
@@ -330,6 +319,7 @@ public class GameManager : MonoBehaviour
     }
 
     // Tạm thời để đây, khả năng là sẽ ko cần đến
+    /*
     private void OnBookArrived(Book book, Bookshelf shelf, BookSpace space)
     {
         // Gắn sách làm con của BookSpace để giữ đúng vị trí & sortingOrder theo kệ
@@ -344,4 +334,5 @@ public class GameManager : MonoBehaviour
         // Cập nhật lại trạng thái bị che
         RefreshAllBlockedStates();
     }
+    */
 }

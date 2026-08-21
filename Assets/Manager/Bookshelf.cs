@@ -8,6 +8,10 @@ public class BookshelfVisualEntry
 {
     public BookType Type;
     public Sprite Sprite;
+
+    [Header("Custom Adjustments")]
+    public Vector2 Offset = Vector2.zero;
+    public Vector3 Scale = Vector3.one;
 }
 
 public class Bookshelf : MonoBehaviour
@@ -21,8 +25,14 @@ public class Bookshelf : MonoBehaviour
     [SerializeField] private Vector3 startOffset = Vector3.zero;
 
     [Header("Top Visual")]
+    // Prefab này PHẢI có SpriteRenderer, giống hệt cách bookPrefab / placedBookVisualPrefab
+    // đang dùng trong GameManager.cs (SpawnPlacedBookVisual) -> không dùng UI Image.
     [SerializeField] private GameObject topVisualPrefab;
     [SerializeField] private BookshelfVisualEntry[] topVisualsByType;
+    [SerializeField] private float topVisualOffsetY = 0.2f; // khoảng cách visual cách phía trên Bookshelf
+
+    // Giữ tham chiếu instance hiện tại để tránh spawn chồng nhiều visual mỗi lần Initialize() được gọi lại
+    private GameObject currentTopVisual;
 
     private readonly List<BookSpace> spaces = new List<BookSpace>();
 
@@ -58,12 +68,17 @@ public class Bookshelf : MonoBehaviour
         }
     }
 
-    // =========================================================
-    // TOP VISUAL
-    // =========================================================
-
+    // TOP VISUAL — cùng pattern với SpawnPlacedBookVisual trong GameManager.cs:
+    // 1 prefab (SpriteRenderer) + mảng sprite theo Type.
     private void SpawnTopVisual()
     {
+        // Xóa visual cũ (nếu Initialize() được gọi lại)
+        if (currentTopVisual != null)
+        {
+            Destroy(currentTopVisual);
+            currentTopVisual = null;
+        }
+
         if (topVisualPrefab == null)
         {
             Debug.LogWarning(
@@ -71,85 +86,92 @@ public class Bookshelf : MonoBehaviour
             );
             return;
         }
-        // Tìm sprite tương ứng với BookType
-        Sprite matchedSprite = topVisualsByType?
-            .FirstOrDefault(e => e.Type == Type)?.Sprite;
 
-        if (matchedSprite == null)
+        // Tìm entry (sprite + offset + scale riêng) tương ứng với BookType
+        BookshelfVisualEntry entry = topVisualsByType?
+            .FirstOrDefault(e => e.Type == Type);
+
+        if (entry == null || entry.Sprite == null)
         {
             Debug.LogWarning(
                 $"Bookshelf [{Type}] không có Top Visual Sprite tương ứng!"
             );
             return;
         }
-        SpriteRenderer bookshelfRenderer = GetComponent<SpriteRenderer>();
-        // Nếu SpriteRenderer nằm trong child của Bookshelf
-        if (bookshelfRenderer == null)
-        {
-            bookshelfRenderer = GetComponentInChildren<SpriteRenderer>();
-        }
 
-        if (bookshelfRenderer == null)
+        // Vị trí đỉnh Bookshelf trong world space, tính từ RectTransform nếu có
+        // (Bookshelf dùng RectTransform), fallback SpriteRenderer nếu không có.
+        Vector3 topAnchor = GetTopAnchorWorldPosition();
+
+        Vector3 spawnPosition = topAnchor + new Vector3(
+            entry.Offset.x,
+            entry.Offset.y + topVisualOffsetY,
+            0f
+        );
+
+        // Tạo visual như một world object (SpriteRenderer), y hệt cách
+        // SpawnPlacedBookVisual đang tạo book visual đã xếp lên kệ.
+        GameObject visual = Instantiate(
+            topVisualPrefab,
+            spawnPosition,
+            Quaternion.identity,
+            transform
+        );
+
+        currentTopVisual = visual;
+
+        SpriteRenderer sr = visual.GetComponent<SpriteRenderer>();
+
+        if (sr == null)
         {
             Debug.LogWarning(
-                $"Bookshelf [{Type}] không tìm thấy SpriteRenderer!"
+                $"Top Visual Prefab '{topVisualPrefab.name}' cần có SpriteRenderer " +
+                "(giống Book / Placed Book Visual prefab), hiện đang thiếu!"
             );
             return;
         }
 
-        // Lấy điểm cao nhất của sprite Bookshelf
-        Bounds bounds = bookshelfRenderer.bounds;
+        sr.sprite = entry.Sprite;
+        visual.transform.localScale = entry.Scale;
 
-        // Khoảng cách visual cách phía trên Bookshelf
-        float offsetY = 0.2f;
-
-        Vector3 spawnPosition = new Vector3(
-            bounds.center.x,
-            bounds.max.y + offsetY,
-            transform.position.z
-        );
-
-        // Tạo visual
-        GameObject visual = Instantiate(
-            topVisualPrefab,
-            spawnPosition,
-            Quaternion.identity
-        );
-
-        // Gán sprite
-        SpriteRenderer visualRenderer = visual.GetComponent<SpriteRenderer>();
-
-        if (visualRenderer != null)
+        // Đặt vẽ trên cùng layer/order với Bookshelf, +1 để nằm phía trước
+        SpriteRenderer shelfRenderer = GetComponentInChildren<SpriteRenderer>();
+        if (shelfRenderer != null && shelfRenderer != sr)
         {
-            visualRenderer.sprite = matchedSprite;
-
-            // Đảm bảo visual nằm phía trước Bookshelf
-            visualRenderer.sortingLayerID =
-                bookshelfRenderer.sortingLayerID;
-
-            visualRenderer.sortingOrder =
-                bookshelfRenderer.sortingOrder + 1;
+            sr.sortingLayerID = shelfRenderer.sortingLayerID;
+            sr.sortingOrder = shelfRenderer.sortingOrder + 1;
         }
-        else
-        {
-            Debug.LogWarning(
-                $"Top Visual Prefab '{topVisualPrefab.name}' không có SpriteRenderer!"
-            );
-        }
-        visual.transform.SetParent(transform, true);
     }
 
-    // =========================================================
-    // BOOK SPACE
-    // =========================================================
+    // Lấy tọa độ world của điểm giữa-đỉnh Bookshelf, dùng RectTransform nếu có
+    // (không phụ thuộc việc Bookshelf có SpriteRenderer hay không).
+    private Vector3 GetTopAnchorWorldPosition()
+    {
+        RectTransform rect = GetComponent<RectTransform>();
+        if (rect == null) rect = GetComponentInChildren<RectTransform>();
 
-    // Tìm vị trí trống đầu tiên để thả sách vào
+        if (rect != null)
+        {
+            Vector3[] corners = new Vector3[4]; // 0:BL 1:TL 2:TR 3:BR
+            rect.GetWorldCorners(corners);
+            return (corners[1] + corners[2]) / 2f;
+        }
+
+        SpriteRenderer renderer = GetComponentInChildren<SpriteRenderer>();
+        if (renderer != null)
+        {
+            Bounds bounds = renderer.bounds;
+            return new Vector3(bounds.center.x, bounds.max.y, transform.position.z);
+        }
+
+        return transform.position;
+    }
+
     public BookSpace GetFirstEmptySpace()
     {
         return spaces.FirstOrDefault(s => !s.IsOccupied);
     }
 
-    // Gọi mỗi khi một cuốn sách được xếp vào kệ
     public void NotifySpaceAssigned()
     {
         if (IsFull)
@@ -158,7 +180,6 @@ public class Bookshelf : MonoBehaviour
         }
     }
 
-    // Xóa toàn bộ BookSpace cũ
     private void ClearSpaces()
     {
         foreach (var space in spaces)
@@ -172,7 +193,6 @@ public class Bookshelf : MonoBehaviour
         spaces.Clear();
     }
 
-    // Giải phóng sách khỏi Bookshelf
     public void ReleaseBooks()
     {
         foreach (var space in spaces)

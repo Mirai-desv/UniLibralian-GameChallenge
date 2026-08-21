@@ -47,23 +47,18 @@ MonoBehaviour:
   bookSpacePrefab: {fileID: 8783765885280968714, guid: 92a5bc1755332e44fa832577276c7693, type: 3}
   spaceWidth: 0.8
   startOffset: {x: 0, y: 0, z: 0}
-  topVisualPrefab: {fileID: 5418308970620220160, guid: 19e6319b9750c374cb08c55d2bcac0ad, type: 3}
+  topVisualPrefab: {fileID: 4173234402107881197, guid: 19e6319b9750c374cb08c55d2bcac0ad, type: 3}
   topVisualsByType:
   - Type: 0
     Sprite: {fileID: -7647415300689008521, guid: 4f7a3aa1d2da4244dbd959c3dbef3b33, type: 3}
-  - Type: 0
-    Sprite: {fileID: 0}
-  - Type: 0
-    Sprite: {fileID: 0}
-  - Type: 0
-    Sprite: {fileID: 0}
-  - Type: 0
-    Sprite: {fileID: 0}
-  - Type: 0
-    Sprite: {fileID: 0}
-  - Type: 0
-    Sprite: {fileID: 0}
-  - Type: 0
-    Sprite: {fileID: 0}
-  - Type: 0
-    Sprite: {fileID: 0}
+    Offset: {x: 0, y: 0}
+    Scale: {x: 1, y: 1, z: 1}
+  - Type: 1
+    Sprite: {fileID: -4014252397576231541, guid: 071c1ad04f145394aa6a62caea6f2045, type: 3}
+    Offset: {x: 0, y: 0}
+    Scale: {x: 1, y: 1, z: 1}
+  - Type: 2
+    Sprite: {fileID: -1866861899739511450, guid: 36b79c75e9cd89140834e6ecb41e7787, type: 3}
+    Offset: {x: 0, y: 0}
+    Scale: {x: 1, y: 1, z: 1}
+  topVisualOffsetY: 1
