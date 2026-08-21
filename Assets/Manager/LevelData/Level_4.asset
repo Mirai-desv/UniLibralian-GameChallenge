@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: Level_4
   m_EditorClassIdentifier: Assembly-CSharp::LevelData
   ShelfQueue:
+  - Type: 4
+    SpaceCount: 5
+  - Type: 8
+    SpaceCount: 5
   - Type: 0
     SpaceCount: 5
   - Type: 1
-    SpaceCount: 5
-  - Type: 2
     SpaceCount: 5
   BookLayout: []

@@ -106,7 +106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Book
   <IsBlocked>k__BackingField: 0
   <IsMoving>k__BackingField: 0
-  <Type>k__BackingField: 0
+  <Type>k__BackingField: 3
   boxCollider: {fileID: 0}
   spriteRenderer: {fileID: 0}
   blockedOverlaySprite: {fileID: 0}
