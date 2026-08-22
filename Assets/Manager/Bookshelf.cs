@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using DG.Tweening;
 
 [System.Serializable]
 public class BookshelfVisualEntry
@@ -141,6 +142,31 @@ public class Bookshelf : MonoBehaviour
             sr.sortingLayerID = shelfRenderer.sortingLayerID;
             sr.sortingOrder = shelfRenderer.sortingOrder + 1;
         }
+    }
+    [Header("Animation")]
+    [SerializeField] private float showDuration = 0.35f;
+    [SerializeField] private float hideDuration = 0.25f;
+
+    public void PlayShowAnimation()
+    {
+        transform.DOKill();
+
+        transform.localScale = Vector3.zero;
+
+        transform.DOScale(Vector3.one, showDuration)
+            .SetEase(Ease.OutBack);
+    }
+
+    public void PlayHideAnimation(Action onComplete)
+    {
+        transform.DOKill();
+
+        transform.DOScale(Vector3.zero, hideDuration)
+            .SetEase(Ease.InBack)
+            .OnComplete(() =>
+            {
+                onComplete?.Invoke();
+            });
     }
 
     // Lấy tọa độ world của điểm giữa-đỉnh Bookshelf, dùng RectTransform nếu có

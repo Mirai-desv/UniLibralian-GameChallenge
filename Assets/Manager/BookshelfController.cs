@@ -42,6 +42,7 @@ public class BookshelfController : MonoBehaviour
         newShelf.Initialize(data.Type, data.SpaceCount);
         newShelf.OnShelfFilled += HandleShelfFilled;
         activeShelves[slotIndex] = newShelf;
+        newShelf.PlayShowAnimation();
 
         OnShelfSpawned?.Invoke(newShelf);
     }
@@ -49,14 +50,23 @@ public class BookshelfController : MonoBehaviour
     private void HandleShelfFilled(Bookshelf shelf)
     {
         int slotIndex = Array.IndexOf(activeShelves, shelf);
-        if(slotIndex < 0) return;
+
+        if (slotIndex < 0)
+            return;
+
         shelf.OnShelfFilled -= HandleShelfFilled;
 
         shelf.ReleaseBooks();
 
-        Destroy(shelf.gameObject);
-        activeShelves[slotIndex] = null;
-        SpawnNextShelf(slotIndex);
+        shelf.PlayHideAnimation(() =>
+        {
+            Destroy(shelf.gameObject);
+
+            activeShelves[slotIndex] = null;
+
+            // Spawn bookshelf tiếp theo
+            SpawnNextShelf(slotIndex);
+        });
     }
 
     public Bookshelf FindMatchingShelf(BookType type)
