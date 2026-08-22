@@ -2582,7 +2582,7 @@ MonoBehaviour:
   bookSpacePrefab: {fileID: 8783765885280968714, guid: 92a5bc1755332e44fa832577276c7693, type: 3}
   leftCapPrefab: {fileID: 0}
   rightCapPrefab: {fileID: 0}
-  capacity: 6
+  capacity: 7
   spaceWidth: 0.8
   capWidth: 0.15
 --- !u!4 &1161142411
