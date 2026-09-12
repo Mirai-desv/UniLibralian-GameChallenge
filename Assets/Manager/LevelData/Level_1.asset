@@ -19,4 +19,31 @@ MonoBehaviour:
     SpaceCount: 5
   - Type: 2
     SpaceCount: 5
-  BookLayout: []
+  BookLayout:
+  - Type: 0
+    Position: {x: 5, y: 5}
+    SortingOrder: 0
+  - Type: 0
+    Position: {x: 4, y: 5}
+    SortingOrder: 1
+  - Type: 2
+    Position: {x: 3, y: 5}
+    SortingOrder: 2
+  - Type: 2
+    Position: {x: 2, y: 5}
+    SortingOrder: 3
+  - Type: 1
+    Position: {x: 0, y: 0}
+    SortingOrder: 4
+  - Type: 1
+    Position: {x: 0, y: 0}
+    SortingOrder: 5
+  - Type: 0
+    Position: {x: 0, y: 0}
+    SortingOrder: 6
+  - Type: 0
+    Position: {x: 0, y: 0}
+    SortingOrder: 7
+  - Type: 0
+    Position: {x: 0, y: 0}
+    SortingOrder: 8

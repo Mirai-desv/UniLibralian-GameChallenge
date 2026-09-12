@@ -12,6 +12,6 @@ public class LevelData : ScriptableObject
 {
     public List<BookshelfData> ShelfQueue;
 
-    // Toàn bộ sách xuất heienj sẵn trên bàn chơi khi vào level
+    // Toàn bộ sách xuất hiện sẵn trên bàn chơi khi vào level
     public List<BookSpawnData> BookLayout = new List<BookSpawnData>();
 }

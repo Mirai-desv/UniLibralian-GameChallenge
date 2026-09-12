@@ -141,7 +141,7 @@ public class GameManager : MonoBehaviour
         BookSpace targetSpace = shelf.GetFirstEmptySpace();
         if(targetSpace == null)
         {
-            // Kệ vừa bị lấp đầy bởi 1 lượt khác ngay trước đó (hiếm, phòng ngừa thôi)
+            // Kệ vừa bị lấp đầy bởi 1 lượt khác ngay trước đó
             Debug.LogWarning($"Kệ {shelf.Type} báo còn chỗ nhưng GetFirstEmptySpace() lại null.");
             return;
         }
